@@ -1,6 +1,8 @@
 import citas.Cita;
-import consultas.Consultas;
+import consultas.ConsultaEspecialista;
+import consultas.ConsultaMedica;
 import historias.HistoriaClinica;
+import historias.HistorialCambios;
 import modelo.Paciente;
 import recetas.Receta;
 import reportes.ReporteVisitor;
@@ -10,13 +12,14 @@ public class Main {
         Paciente paciente = new Paciente("Ana Torres");
         Cita cita = new Cita("C-001", paciente, "Especialista");
         HistoriaClinica historia = new HistoriaClinica(paciente);
+        HistorialCambios historial = new HistorialCambios();
 
         System.out.println("SISTEMA BASICO DE CITAS MEDICAS");
 
-        Consultas.ConsultaMedica consulta = new Consultas.Especialista(cita, historia);
+        ConsultaMedica consulta = new ConsultaEspecialista(cita, historia);
         consulta.atender();
 
-        historia.guardar();
+        historial.guardar(historia.guardar());
         Receta receta = new Receta("Acetaminofen", "500 mg cada 8 horas").clonarPara(paciente);
 
         System.out.println();
@@ -29,7 +32,7 @@ public class Main {
         historia.mostrar();
 
         System.out.println("Se restaura la version anterior:");
-        historia.deshacer();
+        historia.restaurar(historial.deshacer());
         historia.mostrar();
 
         System.out.println();

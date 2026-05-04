@@ -1,7 +1,5 @@
 package historias;
 
-import java.util.Stack;
-
 import modelo.Paciente;
 import reportes.ReporteVisitor;
 
@@ -9,7 +7,6 @@ public class HistoriaClinica {
     private final Paciente paciente;
     private String diagnostico = "Sin diagnostico";
     private String tratamiento = "Sin tratamiento";
-    private final Stack<Memento> historial = new Stack<>();
 
     public HistoriaClinica(Paciente paciente) {
         this.paciente = paciente;
@@ -20,14 +17,13 @@ public class HistoriaClinica {
         this.tratamiento = tratamiento;
     }
 
-    public void guardar() {
-        historial.push(new Memento(diagnostico, tratamiento));
+    public HistoriaMemento guardar() {
+        return new HistoriaMemento(diagnostico, tratamiento);
     }
 
-    public void deshacer() {
-        Memento memento = historial.pop();
-        diagnostico = memento.diagnostico;
-        tratamiento = memento.tratamiento;
+    public void restaurar(HistoriaMemento memento) {
+        diagnostico = memento.getDiagnostico();
+        tratamiento = memento.getTratamiento();
     }
 
     public void mostrar() {
@@ -46,15 +42,5 @@ public class HistoriaClinica {
 
     public void aceptar(ReporteVisitor visitor) {
         visitor.visitar(this);
-    }
-
-    private static class Memento {
-        private final String diagnostico;
-        private final String tratamiento;
-
-        public Memento(String diagnostico, String tratamiento) {
-            this.diagnostico = diagnostico;
-            this.tratamiento = tratamiento;
-        }
     }
 }

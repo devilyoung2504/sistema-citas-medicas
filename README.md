@@ -15,9 +15,14 @@ src/
     Cita.java
     EstadoCita.java
   consultas/
-    Consultas.java
+    ConsultaMedica.java
+    ConsultaInterna.java
+    ConsultaExterna.java
+    ConsultaEspecialista.java
   historias/
     HistoriaClinica.java
+    HistoriaMemento.java
+    HistorialCambios.java
   recetas/
     Receta.java
   reportes/
@@ -54,14 +59,14 @@ Funcion en el sistema: controlar si una cita esta pendiente, terminada o cancela
 
 Modulo: `consultas`
 
-Se usa en `Consultas.java`. La clase base `ConsultaMedica` define los pasos generales de una consulta:
+Se usa en `ConsultaMedica.java`. La clase base `ConsultaMedica` define los pasos generales de una consulta:
 
 1. Registrar paciente.
 2. Diagnosticar.
 3. Recetar.
 4. Finalizar.
 
-Las consultas interna, externa y especialista cambian el diagnostico y la receta, pero conservan el mismo flujo.
+`ConsultaInterna`, `ConsultaExterna` y `ConsultaEspecialista` cambian el diagnostico y la receta, pero conservan el mismo flujo.
 
 Funcion en el sistema: evitar repetir el proceso general de atencion medica.
 
@@ -69,7 +74,7 @@ Funcion en el sistema: evitar repetir el proceso general de atencion medica.
 
 Modulo: `historias`
 
-Se usa en `HistoriaClinica`. Permite guardar una version de la historia clinica y restaurarla si se comete un error.
+Se usa con `HistoriaClinica`, `HistoriaMemento` y `HistorialCambios`. Permite guardar una version de la historia clinica y restaurarla si se comete un error.
 
 Funcion en el sistema: recuperar un diagnostico o tratamiento anterior.
 
