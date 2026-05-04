@@ -1,13 +1,15 @@
-package state;
+package citas.estado;
+
+import citas.CitaMedica;
 
 public class EstadoEnConsulta implements EstadoCita {
     @Override
-    public void siguiente(Cita cita) {
-        cita.setEstado(new EstadoFinalizada());
+    public void avanzar(CitaMedica cita) {
+        cita.cambiarEstado(new EstadoFinalizada());
     }
 
     @Override
-    public void cancelar(Cita cita) {
+    public void cancelar(CitaMedica cita) {
         System.out.println("No se puede cancelar una cita que ya esta en consulta.");
     }
 

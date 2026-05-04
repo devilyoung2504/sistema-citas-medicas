@@ -1,109 +1,105 @@
-import memento.HistoriaClinica;
-import memento.HistorialCambios;
-import prototype.PlantillaConsulta;
-import state.Cita;
-import template.ConsultaEspecialista;
-import template.ConsultaExterna;
-import template.ConsultaInterna;
-import visitor.CitaMedica;
-import visitor.ElementoMedico;
-import visitor.HistoriaClinicaResumen;
-import visitor.RecetaMedica;
-import visitor.ReporteMedicoVisitor;
+import citas.CitaMedica;
+import consultas.ConsultaEspecialista;
+import consultas.ConsultaExterna;
+import consultas.ConsultaInterna;
+import consultas.ConsultaMedica;
+import consultas.TipoConsulta;
+import historias.HistoriaClinica;
+import historias.HistorialCambios;
+import modelo.Paciente;
+import recetas.RecetaMedica;
+import reportes.ElementoReporte;
+import reportes.ReporteMedicoVisitor;
 
 public class Main {
     public static void main(String[] args) {
-        demostrarTemplateMethod();
-        demostrarMemento();
-        demostrarVisitor();
-        demostrarPrototype();
-        demostrarState();
+        System.out.println("SISTEMA BASICO DE ATENCION DE CITAS MEDICAS");
+        System.out.println();
+
+        atenderConsultaInterna();
+        atenderConsultaExterna();
+        atenderConsultaEspecialista();
+        demostrarCancelacionDeCita();
     }
 
-    private static void demostrarTemplateMethod() {
-        System.out.println("=== TEMPLATE METHOD ===");
-        new ConsultaInterna("Ana Torres", "C-101").atenderConsulta();
-        System.out.println();
-        new ConsultaExterna("Luis Perez", "C-102").atenderConsulta();
-        System.out.println();
-        new ConsultaEspecialista("Marta Rojas", "C-103", "Cardiologia").atenderConsulta();
-        System.out.println();
-    }
-
-    private static void demostrarMemento() {
-        System.out.println("=== MEMENTO ===");
-        HistoriaClinica historia = new HistoriaClinica(
-                "Ana Torres",
-                "Migrana moderada",
-                "Reposo e hidratacion"
-        );
+    private static void atenderConsultaInterna() {
+        Paciente paciente = new Paciente("1001", "Ana Torres", 32);
+        CitaMedica cita = new CitaMedica("C-001", paciente, TipoConsulta.INTERNA);
+        HistoriaClinica historia = new HistoriaClinica(paciente);
         HistorialCambios historial = new HistorialCambios();
 
-        historia.mostrar();
-        historial.guardar(historia.guardar());
+        System.out.println("=== Consulta interna ===");
+        cita.mostrarEstado();
+        historial.guardar(historia.guardarVersion());
 
-        historia.setDiagnostico("Migrana con sospecha de sinusitis");
-        historia.setTratamiento("Analgesico, hidratacion y control en 48 horas");
-        System.out.println("Historia actualizada:");
-        historia.mostrar();
+        ConsultaMedica consulta = new ConsultaInterna(cita, historia);
+        consulta.atender();
 
-        historia.restaurar(historial.deshacer());
+        historial.guardar(historia.guardarVersion());
+        System.out.println();
+        historia.mostrar();
+        System.out.println();
+        consulta.getRecetaGenerada().mostrar();
+
+        System.out.println();
+        System.out.println("Correccion academica con Memento:");
+        historia.actualizar(
+                "Diagnostico escrito por error",
+                "Tratamiento escrito por error",
+                "Se debe restaurar la version anterior"
+        );
+        historia.mostrar();
+        historia.restaurar(historial.obtenerUltimaVersion());
         System.out.println("Historia restaurada:");
         historia.mostrar();
+
+        generarReporte(cita, historia, consulta.getRecetaGenerada());
         System.out.println();
     }
 
-    private static void demostrarVisitor() {
-        System.out.println("=== VISITOR ===");
+    private static void atenderConsultaExterna() {
+        Paciente paciente = new Paciente("1002", "Luis Perez", 45);
+        CitaMedica cita = new CitaMedica("C-002", paciente, TipoConsulta.EXTERNA);
+        HistoriaClinica historia = new HistoriaClinica(paciente);
+
+        System.out.println("=== Consulta externa ===");
+        ConsultaMedica consulta = new ConsultaExterna(cita, historia);
+        consulta.atender();
+        generarReporte(cita, historia, consulta.getRecetaGenerada());
+        System.out.println();
+    }
+
+    private static void atenderConsultaEspecialista() {
+        Paciente paciente = new Paciente("1003", "Marta Rojas", 58);
+        CitaMedica cita = new CitaMedica("C-003", paciente, TipoConsulta.ESPECIALISTA);
+        HistoriaClinica historia = new HistoriaClinica(paciente);
+
+        System.out.println("=== Consulta especialista ===");
+        ConsultaMedica consulta = new ConsultaEspecialista(cita, historia, "Cardiologia");
+        consulta.atender();
+        generarReporte(cita, historia, consulta.getRecetaGenerada());
+        System.out.println();
+    }
+
+    private static void demostrarCancelacionDeCita() {
+        Paciente paciente = new Paciente("1004", "Carlos Diaz", 28);
+        CitaMedica cita = new CitaMedica("C-004", paciente, TipoConsulta.EXTERNA);
+
+        System.out.println("=== Cancelacion de cita ===");
+        cita.mostrarEstado();
+        cita.cancelar();
+        cita.mostrarEstado();
+        cita.avanzarEstado();
+    }
+
+    private static void generarReporte(CitaMedica cita, HistoriaClinica historia, RecetaMedica receta) {
         ReporteMedicoVisitor reporte = new ReporteMedicoVisitor();
+        ElementoReporte[] elementos = {cita, historia, receta};
 
-        ElementoMedico[] elementos = {
-                new CitaMedica("C-103", "Marta Rojas", "Especialista"),
-                new HistoriaClinicaResumen("Marta Rojas", "Control cardiologico estable"),
-                new RecetaMedica("Atorvastatina", "1 tableta nocturna")
-        };
-
-        for (ElementoMedico elemento : elementos) {
+        System.out.println();
+        System.out.println("Reporte general:");
+        for (ElementoReporte elemento : elementos) {
             elemento.aceptar(reporte);
         }
-        System.out.println();
-    }
-
-    private static void demostrarPrototype() {
-        System.out.println("=== PROTOTYPE ===");
-        PlantillaConsulta plantillaBase = new PlantillaConsulta(
-                "Consulta interna",
-                30,
-                "Valoracion general de medicina interna"
-        );
-        PlantillaConsulta plantillaClonada = plantillaBase.clonar();
-        plantillaClonada.setTipo("Consulta especialista");
-        plantillaClonada.setDuracionMinutos(45);
-        plantillaClonada.setDescripcion("Valoracion especializada en cardiologia");
-
-        System.out.println("Plantilla base:");
-        plantillaBase.mostrar();
-        System.out.println("Plantilla clonada:");
-        plantillaClonada.mostrar();
-        System.out.println();
-    }
-
-    private static void demostrarState() {
-        System.out.println("=== STATE ===");
-        Cita cita = new Cita("C-200", "Pedro Gomez");
-        cita.mostrarEstado();
-        cita.siguienteEstado();
-        cita.mostrarEstado();
-        cita.siguienteEstado();
-        cita.mostrarEstado();
-        cita.siguienteEstado();
-        cita.mostrarEstado();
-
-        Cita citaCancelada = new Cita("C-201", "Laura Diaz");
-        citaCancelada.mostrarEstado();
-        citaCancelada.cancelar();
-        citaCancelada.mostrarEstado();
-        citaCancelada.siguienteEstado();
-        System.out.println();
     }
 }

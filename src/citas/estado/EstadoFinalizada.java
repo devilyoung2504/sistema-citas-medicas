@@ -1,13 +1,15 @@
-package state;
+package citas.estado;
+
+import citas.CitaMedica;
 
 public class EstadoFinalizada implements EstadoCita {
     @Override
-    public void siguiente(Cita cita) {
-        System.out.println("La cita ya finalizo.");
+    public void avanzar(CitaMedica cita) {
+        System.out.println("La cita ya se encuentra finalizada.");
     }
 
     @Override
-    public void cancelar(Cita cita) {
+    public void cancelar(CitaMedica cita) {
         System.out.println("No se puede cancelar una cita finalizada.");
     }
 

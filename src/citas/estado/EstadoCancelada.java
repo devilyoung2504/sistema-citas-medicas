@@ -1,13 +1,15 @@
-package state;
+package citas.estado;
+
+import citas.CitaMedica;
 
 public class EstadoCancelada implements EstadoCita {
     @Override
-    public void siguiente(Cita cita) {
-        System.out.println("La cita esta cancelada.");
+    public void avanzar(CitaMedica cita) {
+        System.out.println("La cita esta cancelada y no puede avanzar.");
     }
 
     @Override
-    public void cancelar(Cita cita) {
+    public void cancelar(CitaMedica cita) {
         System.out.println("La cita ya fue cancelada.");
     }
 
