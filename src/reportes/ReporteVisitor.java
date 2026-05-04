@@ -8,6 +8,7 @@ public class ReporteVisitor {
     public void visitar(Cita cita) {
         System.out.println("Cita: " + cita.getCodigo()
                 + " | Paciente: " + cita.getPaciente().getNombre()
+                + " | Tipo: " + cita.getTipo()
                 + " | Estado: " + cita.getEstado());
     }
 
@@ -17,7 +18,8 @@ public class ReporteVisitor {
     }
 
     public void visitar(Receta receta) {
-        System.out.println("Receta: " + receta.getMedicamento()
+        System.out.println("Receta: " + receta.getPaciente().getNombre()
+                + " | Medicamento: " + receta.getMedicamento()
                 + " | Dosis: " + receta.getDosis());
     }
 }

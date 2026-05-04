@@ -103,6 +103,36 @@ javac -d out $(find src -name "*.java")
 java -cp out Main
 ```
 
+## Diagramas UML
+
+Los diagramas UML de clase estan en:
+
+```text
+docs/uml.html
+```
+
+La pagina incluye diagramas para:
+
+- State
+- Template Method
+- Memento
+- Prototype
+- Visitor
+
+Cada diagrama tiene un boton para descargarlo como imagen PNG.
+
+Referencias usadas para el diseno:
+
+- Guia de clase `PatronesComportamiento.pptx.pdf`
+- Refactoring Guru: https://refactoring.guru/es/design-patterns
+
+## Justificacion de flechas UML
+
+- **Herencia:** linea continua con triangulo blanco. Se usa en Template Method porque `ConsultaInterna`, `ConsultaExterna` y `ConsultaEspecialista` heredan de `ConsultaMedica`.
+- **Asociacion dirigida:** linea continua con flecha. Se usa cuando una clase conoce o usa directamente a otra, por ejemplo `Cita` usa `EstadoCita`, `ConsultaMedica` usa `Cita` e `HistoriaClinica`, y `Receta` queda asociada a `Paciente`.
+- **Agregacion:** linea continua con rombo blanco. Se usa en Memento porque `HistorialCambios` guarda varios `HistoriaMemento`, pero no son parte obligatoria permanente de la historia clinica.
+- **Asociacion reflexiva:** linea continua que vuelve a la misma clase. Se usa en Prototype porque `Receta` crea una copia de si misma con `clonarPara()`.
+
 ## Resultado esperado
 
 El programa muestra en consola:
