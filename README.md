@@ -1,28 +1,38 @@
 # Sistema basico de citas medicas
 
-Proyecto academico en Java para mostrar patrones de diseno dentro de un sistema sencillo de atencion medica.
+Proyecto academico en Java para practicar patrones de diseno en un sistema sencillo de atencion de citas medicas.
 
-La idea no es tener ejemplos separados por patron, sino un pequeno flujo real:
+La idea del proyecto es mostrar los patrones dentro de un flujo basico, no como ejemplos separados. El sistema crea una cita, atiende una consulta, actualiza la historia clinica, genera una receta y muestra un reporte final.
 
-1. Se agenda una cita medica.
-2. La cita cambia de estado durante la atencion.
-3. El medico atiende una consulta interna, externa o especialista.
-4. Se actualiza la historia clinica.
-5. Se genera una receta medica.
-6. Se genera un reporte general de la atencion.
-
-## Estructura del proyecto
+## Estructura
 
 ```text
 src/
   Main.java
-  modelo/       Datos basicos como Paciente
-  citas/        Cita medica y estados de la cita
-  consultas/    Flujo de atencion medica
-  historias/    Historia clinica y control de versiones
-  recetas/      Receta medica reutilizable
-  reportes/     Reportes usando Visitor
+  modelo/
+    Paciente.java
+  citas/
+    Cita.java
+    EstadoCita.java
+  consultas/
+    Consultas.java
+  historias/
+    HistoriaClinica.java
+  recetas/
+    Receta.java
+  reportes/
+    ReporteVisitor.java
 ```
+
+## Flujo del programa
+
+1. Se crea un paciente.
+2. Se crea una cita medica.
+3. Se atiende una consulta de especialista.
+4. Se actualiza la historia clinica.
+5. Se genera una receta medica.
+6. Se corrige un error restaurando la historia anterior.
+7. Se imprime un reporte final.
 
 ## Patrones usados
 
@@ -30,64 +40,54 @@ src/
 
 Modulo: `citas`
 
-Permite que una cita cambie su comportamiento segun su estado actual. Por ejemplo, una cita programada se puede cancelar, pero una cita finalizada ya no se puede cancelar.
+Se usa en la clase `Cita` junto con `EstadoCita`. Permite cambiar el estado de la cita de forma sencilla.
 
 Estados usados:
 
 - Programada
-- En espera
-- En consulta
 - Finalizada
 - Cancelada
+
+Funcion en el sistema: controlar si una cita esta pendiente, terminada o cancelada.
 
 ### Template Method
 
 Modulo: `consultas`
 
-Define el flujo general de una consulta medica en la clase `ConsultaMedica`.
+Se usa en `Consultas.java`. La clase base `ConsultaMedica` define los pasos generales de una consulta:
 
-Todas las consultas siguen estos pasos:
+1. Registrar paciente.
+2. Diagnosticar.
+3. Recetar.
+4. Finalizar.
 
-1. Registrar llegada del paciente.
-2. Iniciar consulta.
-3. Evaluar paciente.
-4. Actualizar historia clinica.
-5. Generar receta.
-6. Finalizar consulta.
+Las consultas interna, externa y especialista cambian el diagnostico y la receta, pero conservan el mismo flujo.
 
-Las clases `ConsultaInterna`, `ConsultaExterna` y `ConsultaEspecialista` cambian los detalles de evaluacion, diagnostico y receta.
+Funcion en el sistema: evitar repetir el proceso general de atencion medica.
 
 ### Memento
 
 Modulo: `historias`
 
-Permite guardar una version de la historia clinica antes de modificarla. Si se comete un error en el diagnostico o tratamiento, se puede restaurar la version anterior.
+Se usa en `HistoriaClinica`. Permite guardar una version de la historia clinica y restaurarla si se comete un error.
 
-Clases principales:
-
-- `HistoriaClinica`
-- `HistoriaMemento`
-- `HistorialCambios`
+Funcion en el sistema: recuperar un diagnostico o tratamiento anterior.
 
 ### Prototype
 
 Modulo: `recetas`
 
-Permite crear recetas nuevas a partir de una receta base. Esto evita escribir desde cero recetas que se repiten en varias consultas.
+Se usa en `Receta`. Permite clonar una receta base para asignarla a un paciente.
 
-En este proyecto, `RecetaMedica` tiene el metodo `clonarPara(Paciente paciente)`.
+Funcion en el sistema: reutilizar recetas comunes sin crearlas desde cero.
 
 ### Visitor
 
 Modulo: `reportes`
 
-Permite generar reportes recorriendo varios elementos del sistema sin modificar sus clases principales.
+Se usa en `ReporteVisitor`. Permite generar un reporte usando informacion de la cita, la historia clinica y la receta.
 
-Elementos visitados:
-
-- Cita medica
-- Historia clinica
-- Receta medica
+Funcion en el sistema: agregar una forma de reporte sin modificar mucho las clases principales.
 
 ## Como ejecutar
 
@@ -97,3 +97,15 @@ Desde la raiz del proyecto:
 javac -d out $(find src -name "*.java")
 java -cp out Main
 ```
+
+## Resultado esperado
+
+El programa muestra en consola:
+
+- Registro del paciente.
+- Atencion de la consulta.
+- Estado final de la cita.
+- Historia clinica.
+- Receta medica.
+- Restauracion de historia clinica.
+- Reporte final.

@@ -1,48 +1,39 @@
 package historias;
 
-import modelo.Paciente;
-import reportes.ElementoReporte;
-import reportes.VisitanteReporte;
+import java.util.Stack;
 
-public class HistoriaClinica implements ElementoReporte {
+import modelo.Paciente;
+import reportes.ReporteVisitor;
+
+public class HistoriaClinica {
     private final Paciente paciente;
-    private String diagnostico;
-    private String tratamiento;
-    private String observaciones;
+    private String diagnostico = "Sin diagnostico";
+    private String tratamiento = "Sin tratamiento";
+    private final Stack<Memento> historial = new Stack<>();
 
     public HistoriaClinica(Paciente paciente) {
         this.paciente = paciente;
-        this.diagnostico = "Sin diagnostico registrado";
-        this.tratamiento = "Sin tratamiento registrado";
-        this.observaciones = "Sin observaciones";
     }
 
-    public void actualizar(String diagnostico, String tratamiento, String observaciones) {
+    public void actualizar(String diagnostico, String tratamiento) {
         this.diagnostico = diagnostico;
         this.tratamiento = tratamiento;
-        this.observaciones = observaciones;
     }
 
-    public HistoriaMemento guardarVersion() {
-        return new HistoriaMemento(diagnostico, tratamiento, observaciones);
+    public void guardar() {
+        historial.push(new Memento(diagnostico, tratamiento));
     }
 
-    public void restaurar(HistoriaMemento version) {
-        if (version == null) {
-            System.out.println("No hay una version anterior de la historia clinica.");
-            return;
-        }
-
-        diagnostico = version.getDiagnostico();
-        tratamiento = version.getTratamiento();
-        observaciones = version.getObservaciones();
+    public void deshacer() {
+        Memento memento = historial.pop();
+        diagnostico = memento.diagnostico;
+        tratamiento = memento.tratamiento;
     }
 
     public void mostrar() {
-        System.out.println("Historia clinica de " + paciente.getNombre());
+        System.out.println("Historia de " + paciente.getNombre());
         System.out.println("Diagnostico: " + diagnostico);
         System.out.println("Tratamiento: " + tratamiento);
-        System.out.println("Observaciones: " + observaciones);
     }
 
     public Paciente getPaciente() {
@@ -53,16 +44,17 @@ public class HistoriaClinica implements ElementoReporte {
         return diagnostico;
     }
 
-    public String getTratamiento() {
-        return tratamiento;
+    public void aceptar(ReporteVisitor visitor) {
+        visitor.visitar(this);
     }
 
-    public String getObservaciones() {
-        return observaciones;
-    }
+    private static class Memento {
+        private final String diagnostico;
+        private final String tratamiento;
 
-    @Override
-    public void aceptar(VisitanteReporte visitante) {
-        visitante.visitar(this);
+        public Memento(String diagnostico, String tratamiento) {
+            this.diagnostico = diagnostico;
+            this.tratamiento = tratamiento;
+        }
     }
 }
