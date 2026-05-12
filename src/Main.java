@@ -50,6 +50,7 @@ public class Main {
         System.out.println("=== Consulta especialista ===");
         Paciente paciente = new Paciente("Marta Rojas");
         Cita cita = new Cita("C-003", paciente, "Especialista");
+        Receta recetaBase = new Receta("Acetaminofen", "500 mg cada 8 horas");
         HistoriaClinica historia = new HistoriaClinica(paciente);
         HistorialCambios historial = new HistorialCambios();
 
@@ -57,7 +58,6 @@ public class Main {
         consulta.atender();
 
         historial.guardar(historia.guardar());
-        Receta recetaBase = new Receta("Acetaminofen", "500 mg cada 8 horas");
         Receta recetaPaciente = recetaBase.clonarPara(paciente);
 
         historia.mostrar();
